@@ -220,6 +220,10 @@ export async function aboutToolkit(): Promise<void> {
     }
 }
 
+export async function toastOnConnect(profileName: string): Promise<void> {
+    vscode.window.showInformationMessage( `connected to: ${profileName}`)
+ }
+
 /**
  * Returns a string that includes the OS, AWS Toolkit,
  * and VS Code versions.

@@ -50,15 +50,19 @@ export class SharedCredentialsProviderFactory extends BaseCredentialsProviderFac
     private async loadSharedCredentialsProviders(): Promise<void> {
         this.resetProviders()
 
-        this.logger.verbose('Loading all Shared Credentials Profiles')
         const allCredentialProfiles = await loadSharedCredentialsProfiles()
         this.loadedCredentialsModificationMillis = await this.getLastModifiedMillis(getCredentialsFilename())
         this.loadedConfigModificationMillis = await this.getLastModifiedMillis(getConfigFilename())
         await updateAwsSdkLoadConfigEnvironmentVariable()
 
-        for (const profileName of allCredentialProfiles.keys()) {
+        let profileNames = Array.from(allCredentialProfiles.keys())
+        getLogger().verbose(`credentials: found profiles: ${profileNames}`)
+        for (const profileName of profileNames) {
             const provider = new SharedCredentialsProvider(profileName, allCredentialProfiles)
             await this.addProviderIfValid(profileName, provider)
+        }
+        if (profileNames.length == 1 && profileNames[0] === 'default') {
+            // Auto-connect.
         }
     }
 
